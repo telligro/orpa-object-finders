@@ -1,0 +1,34 @@
+{
+  "name": "@torpadev/orpa-page-object-finder",
+  "version": "0.1.9",
+  "description": "Page Objects Finder app for inspecting web pages in chrome",
+  "main": "finder.plugin.svc.js",
+  "bin": {
+    "launch-finder": "finder.plugin.svc.js"
+  },
+  "scripts": {
+    "build-min": "uglifyjs --compress --mangle -- finder.js > finder.min.js",
+    "build": "npm run build-min"
+  },
+  "keywords": [
+    "ORPA"
+  ],
+  "author": "Shiva Kumar Madhavan",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "uglify-es": "^3.1.8",
+    "eslint": "^4.11.0",
+    "eslint-config-google": "^0.9.1",
+    "gulp": "^3.9.1",
+    "gulp-eslint": "^4.0.0",
+    "gulp-eslint-threshold": "^0.1.1",
+    "gulp-if": "^2.0.2"
+  },
+  "dependencies": {
+    "check-types": "^7.3.0",
+    "nopt": "^4.0.1",
+    "puppeteer": "~0.13.0",
+    "verror": "^1.10.0",
+    "ws": "^3.2.0"
+  }
+}
