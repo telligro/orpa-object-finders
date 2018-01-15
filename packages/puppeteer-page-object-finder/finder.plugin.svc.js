@@ -25,7 +25,7 @@ const VError = require('verror');
 const nopt = require('nopt');
 const fs = require('fs');
 const Dispatcher = require('./dispatcher').Dispatcher;
-const DispatcherInstance = new Dispatcher();
+// const DispatcherInstance = new Dispatcher();
 let knownOpts = {
     'help': Boolean,
     'port': Number,
@@ -468,5 +468,5 @@ process.on('unhandledRejection', (reason, p) => {
 });
 module.exports = {
     FinderPluginSvc: FinderPluginSvc,
-    Dispatcher: DispatcherInstance,
+    Dispatcher: Dispatcher,
 };
