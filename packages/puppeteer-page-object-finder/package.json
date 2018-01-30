@@ -1,6 +1,6 @@
 {
   "name": "@torpadev/orpa-page-object-finder",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Page Objects Finder app for inspecting web pages in chrome",
   "main": "finder.plugin.svc.js",
   "bin": {
