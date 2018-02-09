@@ -1,5 +1,5 @@
 {
-  "name": "@torpadev/orpa-page-object-finder",
+  "name": "@torpadev/opal-page-object-finder",
   "version": "0.2.2",
   "description": "Page Objects Finder app for inspecting web pages in chrome",
   "main": "finder.plugin.svc.js",
@@ -11,7 +11,7 @@
     "build": "npm run build-min"
   },
   "keywords": [
-    "ORPA"
+    "opal"
   ],
   "author": "Shiva Kumar Madhavan",
   "license": "GPL-3.0",
