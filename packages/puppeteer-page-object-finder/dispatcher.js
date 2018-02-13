@@ -81,7 +81,7 @@ Connection.prototype = {
         }
         if (method === 'create') {
             let id = String(this._lastObjectId++);
-            let object = new constructor(this._notify.bind(this, id, objectName));
+            let object = new constructor(this._notify.bind(this, id, objectName), id, objectName);
             this._objects.set(id, object);
             this._sendResponse(message.id, {id: id});
         } else if (method === 'dispose') {
