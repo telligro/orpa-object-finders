@@ -24,8 +24,9 @@ const check = require('check-types');
 const VError = require('verror');
 const nopt = require('nopt');
 const fs = require('fs');
+console.log('Setting Dispatcher ..........................................................................');
 const Dispatcher = require('./dispatcher').Dispatcher;
-// const DispatcherInstance = new Dispatcher();
+const DispatcherInstance = new Dispatcher();
 let knownOpts = {
     'help': Boolean,
     'port': Number,
@@ -61,20 +62,26 @@ function getUniqueId() {
 }
 
 
-let finderSvc;
+let finderSvc = {};
 let finderActive = false;
 let Errors = {
     PUP_PAGE_EVAL_ERROR: 'there was an error in page.eval call made to upstream api: %s',
 };
 class FinderPluginSvc {
-    constructor(notify) {
-        if (!finderSvc) {
-            finderSvc = this;
-        }
-        this._notify = notify;
+    constructor(notify, objId, objName) {
+        console.log('Creating Finder Svc ', this);
+        console.log('notify', notify);
+        console.log('finderSvc', finderSvc);
+        // if (!finderSvc) {
+        //     finderSvc = this;
+        // }
+        console.log('Created::::::::::::::', objId, '::', objName);
+        this.objId = objId;
+        this.objName = objName;
+        finderSvc[objName] = notify;
         // this.finderActive = false;
 
-        return finderSvc;
+        return this;
     }
 
     async _handleFrameLoad(sessionId, jQueryContent, finderContent, frame, retry) {
@@ -163,7 +170,7 @@ class FinderPluginSvc {
             if (finderStarted) {
                 try {
                     console.log('Stopping Finder here %s', parent.url());
-                    await parentExCtxt.evaluate((onFound) => {
+                    await parentExCtxt.evaluate((oid, oname) => {
                         try {
                             if (!!window.finder) {
                                 // console.log('Finder already initialized');
@@ -171,13 +178,15 @@ class FinderPluginSvc {
                                 console.log('stopFinder: Initializing Finder');
                                 window.finder = new Finder(document);
                             }
+                            window.finderRequestOId = oid;
+                            window.finderRequestOName = oname;
                             window.finder.stop();
                         } catch (ex) {
                             let errCreateFinder = new Error(ex.message + ': stopFinder: Could not create Finder ' + window.location.href);
                             console.error(errCreateFinder.message);
                             // throw errCreateFinder;
                         }
-                    });
+                    }, this.objId, this.objName);
                 } catch (ex) {
                     let errStopFinder = new VError(ex, 'stopFinder: Failed stop');
                     console.error(errStopFinder.message);
@@ -206,7 +215,7 @@ class FinderPluginSvc {
                 // pageFnThis ? pageFnThis : this; //TODO: Use the singleton instance of this class
                 // pageFnArgs = Array.isArray(pageFnArgs) ? pageFnArgs : [pageFnArgs];
                 try {
-                    await parentExCtxt.evaluate(() => {
+                    await parentExCtxt.evaluate((oid, oname) => {
                         // console.log('startFinder: Checking for Finder');
                         try {
                             if (!!window.finder) {
@@ -216,12 +225,15 @@ class FinderPluginSvc {
                                 window.finder = new Finder(document);
                             }
 
+                            window.finderRequestOId = oid;
+                            window.finderRequestOName = oname;
+
                             if (window.finderStopped === undefined || window.finderStopped === true) {
                                 window.finder.start((found) => {
-                                    console.log('Found');
+                                    console.log('Found for ', window.finderRequestOId, ':::', window.finderRequestOName);
                                     console.log('Found a object %j', found);
                                     if (window.notifyObjectFound) {
-                                        window.notifyObjectFound(found, window.location.href);
+                                        window.notifyObjectFound(found, window.location.href, window.finderRequestOId, window.finderRequestOName);
                                     } else {
                                         console.log('Cannot invoke from this context: window.notifyObjectFound(found, window.location.href);');
                                     }
@@ -233,7 +245,7 @@ class FinderPluginSvc {
                             // throw errCreateFinder;
                         }
                         // window.finder.start(onFound);
-                    });
+                    }, this.objId, this.objName);
                 } catch (ex) {
                     let errStartFinder = new VError(ex, 'startFinder: Failed start');
                     console.error(errStartFinder.message);
@@ -374,14 +386,16 @@ class FinderPluginSvc {
             try {
                 console.log('Now: %s', page.url().replace(httpRxp, ''));
                 console.log('Required: %s', params.url);
-
-                let isInitialized = await page.evaluate(() => {
+                console.log(this.objId, '_-_', this.objName);
+                let isInitialized = await page.evaluate((oid, oname) => {
                     console.log('Finder %s', typeof Finder);
                     console.log('notifyObjectFound %s', typeof notifyObjectFound);
                     console.log('window.Finder %s', typeof window.Finder);
                     console.log('window.Finder %s', typeof window.notifyObjectFound);
+                    window.finderRequestOId = oid;
+                    window.finderRequestOName = oname;
                     return Promise.resolve(window.notifyObjectFound && Finder);
-                });
+                }, this.objId, this.objName);
 
                 if (!isInitialized) {
                     // page.url().replace(httpRxp, '') !== params.url.replace(httpRxp, '')) {
@@ -390,9 +404,11 @@ class FinderPluginSvc {
                     //     console.log('Page says %s from %s - %s', pmsg, url, finderActive);
                     // });
 
-                    await page.exposeFunction('notifyObjectFound', async (pmsg, url) => {
+                    await page.exposeFunction('notifyObjectFound', async (pmsg, url, oid, oname) => {
+                        console.log(this);
                         console.log('Found object %j in %s', pmsg, url);
-                        finderSvc._notify('ObjectFound', {data: pmsg});
+                        console.log('Request ', oid, ':', oname);
+                        finderSvc[oname]('ObjectFound', {data: pmsg, reqOId: oid, reqOName: oname});
                         return true;
                     });
 
@@ -468,5 +484,5 @@ process.on('unhandledRejection', (reason, p) => {
 });
 module.exports = {
     FinderPluginSvc: FinderPluginSvc,
-    Dispatcher: Dispatcher,
+    Dispatcher: DispatcherInstance,
 };
