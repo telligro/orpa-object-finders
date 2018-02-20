@@ -24,7 +24,6 @@ const check = require('check-types');
 const VError = require('verror');
 const nopt = require('nopt');
 const fs = require('fs');
-console.log('Setting Dispatcher ..........................................................................');
 const Dispatcher = require('./dispatcher').Dispatcher;
 const DispatcherInstance = new Dispatcher();
 let knownOpts = {

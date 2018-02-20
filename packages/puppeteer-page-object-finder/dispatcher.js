@@ -28,8 +28,17 @@ function Dispatcher() {
 Dispatcher.prototype = {
     start: function(port) {
         let httpServer = http.createServer();
-        httpServer.listen(port);
-
+        httpServer.once('error', function(err) {
+            if (err.code === 'EADDRINUSE') {
+                console.warn('Dispatcher already started on', port);
+            }
+        });
+        try {
+            httpServer.listen(port);
+        } catch (ex) {
+            console.warn('[warn] Dispatcher Already Started');
+            return;
+        }
         let WebSocketServer = ws.Server;
         let options = {server: httpServer, path: '/svc'};
         let wss = new WebSocketServer(options);
