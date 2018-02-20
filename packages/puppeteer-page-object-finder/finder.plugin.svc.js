@@ -19,7 +19,7 @@
 
 'use strict';
 const path = require('path');
-const puppeteer = require('puppeteer');
+const puppeteer = require('@telligro/puppeteer');
 const check = require('check-types');
 const VError = require('verror');
 const nopt = require('nopt');
