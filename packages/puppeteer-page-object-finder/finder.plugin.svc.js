@@ -19,7 +19,7 @@
 
 'use strict';
 const path = require('path');
-const puppeteer = require('@telligro/puppeteer');
+const puppeteer = require('opal-puppeteer');
 const check = require('check-types');
 const VError = require('verror');
 const nopt = require('nopt');
