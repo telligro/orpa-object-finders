@@ -84,7 +84,9 @@ class Finder {
         },
       };
       foundEvt.target.xpath = finderObj.xPath(clickEvt.target, true);
+      foundEvt.target.xpathFull = finderObj.xPath(clickEvt.target, false);
       foundEvt.target.framePath = finderObj.getFramePath(clickEvt.target);
+      foundEvt.target.attributes = finderObj.getTargetAttributes(clickEvt.target);
       foundEvt.url = window.location.href;
       // console.log('R-XPath: %s', foundEvt.target.xpath);
       clickEvt.preventDefault();
@@ -106,6 +108,38 @@ class Finder {
       finderObj.styles.backgroundColor = target.style.backgroundColor;// fo$(target).css('background-color');
       fo$(target).css('background-color', finderObj.styles.highightColor);
     }
+  }
+
+  getTargetAttributes(elm) {
+    let attrs = {};
+    fo$.each(fo$(elm)[0].attributes, function(index, attribute) {
+      attrs[attribute.name] = attribute.value;
+    });
+    attrs.child = finderObj.getTargetPreviewAttributes(fo$(elm).children().eq(0));
+    attrs.next = finderObj.getTargetPreviewAttributes(fo$(elm).next());
+    attrs.prev = finderObj.getTargetPreviewAttributes(fo$(elm).prev());
+    attrs.parent = finderObj.getTargetPreviewAttributes(fo$(elm).parent());
+    return attrs;
+  }
+
+  getTargetPreviewAttributes(elm) {
+    const propNames = ['tagName', 'id', 'name', 'class'];
+    let pattrs = {};
+    if (fo$(elm).length>0) {
+      pattrs = finderObj.getProps(elm, propNames);
+    }
+    return pattrs;
+  }
+
+  getProps(elm, propNames) {
+    let props = {};
+    fo$.each(propNames, (i, propName) => {
+      const propVal = fo$(elm).prop(propName);
+      if (propVal!==undefined) {
+        props[propName] = propVal;
+      }
+    });
+    return props;
   }
 
   getFramePath(e) {
