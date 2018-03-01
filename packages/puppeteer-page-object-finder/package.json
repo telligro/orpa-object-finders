@@ -1,6 +1,6 @@
 {
-  "name": "@telligro/opal-page-object-finder",
-  "version": "0.3.6",
+  "name": "opal-page-object-finder",
+  "version": "0.4.0",
   "description": "Page Objects Finder app for inspecting web pages in chrome",
   "repository": {
     "type": "git",
