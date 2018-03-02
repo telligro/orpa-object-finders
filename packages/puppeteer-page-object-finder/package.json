@@ -1,6 +1,6 @@
 {
-  "name": "@telligro/opal-page-object-finder",
-  "version": "0.3.6",
+  "name": "opal-page-object-finder",
+  "version": "0.4.0",
   "description": "Page Objects Finder app for inspecting web pages in chrome",
   "repository": {
     "type": "git",
@@ -31,7 +31,7 @@
   "dependencies": {
     "check-types": "^7.3.0",
     "nopt": "^4.0.1",
-    "puppeteer": "parodot/puppeteer#0.13.0_FrameFix",
+    "opal-puppeteer": "0.13.0-FrameFixPatch",
     "verror": "^1.10.0",
     "ws": "^3.2.0"
   },
